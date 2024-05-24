@@ -24,10 +24,21 @@ pipeline {
             }
         }
 
+        stage('Push Model to S3') {
+            steps {
+                script {
+                    withAWS(credentials: 'aws-s3-creds') {
+                        sh """
+                            aws s3 cp training/model.pkl s3://${S3_BUCKET}/model.pkl
+                        """
+                    }
+                }
+            }
+        }
 
         stage('Build Docker Frontend Image') {
             steps {
-                dir('frontend') {
+                dir('healthcare_chatbot_frontend') {
                     script {
                         frontendImage = docker.build("veerendragoudatp10/chat-frontend:frontend")
                     }
@@ -47,7 +58,7 @@ pipeline {
 
         stage('Build Docker Backend Image') {
             steps {
-                dir('backend') {
+                dir('healthcare_chatbot_backend') {
                     script {
                         backendImage = docker.build("veerendragoudatp10/chat-backend:backend")
                     }
