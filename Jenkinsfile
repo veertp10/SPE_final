@@ -16,9 +16,17 @@ pipeline {
             steps {
                 script {
                     def trainImage = docker.build("train-model:latest", '-f training/Dockerfile training')
+
                     withDockerRegistry([credentialsId: "DockerHubCred", url: ""]) {
                         trainImage.push("${env.BUILD_NUMBER}")
                     }
+                }
+            }
+        }
+
+        stage('Push Model to AWS S3') {
+            steps {
+                script {
                     withAWS(credentials: 'aws-s3-creds') {
                         sh """
                             docker run --rm -v ${pwd()}/training:/app train-model:latest
