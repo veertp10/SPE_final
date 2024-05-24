@@ -6,6 +6,11 @@ pipeline {
                 git branch: 'main', url: 'https://github.com/veertp10/SPE_final.git'
             }
         }
+        stage('Install Ansible Collections') {
+            steps {
+                sh 'ansible-galaxy collection install kubernetes.core'
+            }
+        }
         stage('Deploy with Ansible') {
             steps {
                 script {
