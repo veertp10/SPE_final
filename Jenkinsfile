@@ -15,21 +15,22 @@ pipeline {
         stage('Train Model') {
             steps {
                 script {
-                    def trainImage = docker.build("train-model:latest", '-f training/Dockerfile training')
-
+                    def trainImage = docker.build("veerendragoudatp10/train-model:latest", '-f training/Dockerfile training')
                     withDockerRegistry([credentialsId: "DockerHubCred", url: ""]) {
                         trainImage.push("${env.BUILD_NUMBER}")
                     }
+                    sh """
+                        docker run --rm -v ${pwd()}/training:/app veerendragoudatp10/train-model:${env.BUILD_NUMBER}
+                    """
                 }
             }
         }
 
-        stage('Push Model to AWS S3') {
+        stage('Push Model to S3') {
             steps {
                 script {
                     withAWS(credentials: 'aws-s3-creds') {
                         sh """
-                            docker run --rm -v ${pwd()}/training:/app train-model:latest
                             aws s3 cp training/model.pkl s3://${S3_BUCKET}/model.pkl
                         """
                     }
@@ -39,9 +40,9 @@ pipeline {
 
         stage('Build Docker Frontend Image') {
             steps {
-                dir('healthcare_chatbot_frontend') {
+                dir('frontend') {
                     script {
-                        def frontendImage = docker.build("veerendragoudatp10/chat-frontend:latest")
+                        frontendImage = docker.build("veerendragoudatp10/chat-frontend:frontend")
                     }
                 }
             }
@@ -51,7 +52,6 @@ pipeline {
             steps {
                 script {
                     withDockerRegistry([credentialsId: "DockerHubCred", url: ""]) {
-                        def frontendImage = docker.image("veerendragoudatp10/chat-frontend:latest")
                         frontendImage.push()
                     }
                 }
@@ -60,9 +60,9 @@ pipeline {
 
         stage('Build Docker Backend Image') {
             steps {
-                dir('healthcare_chatbot_backend') {
+                dir('backend') {
                     script {
-                        def backendImage = docker.build("veerendragoudatp10/chat-backend:latest")
+                        backendImage = docker.build("veerendragoudatp10/chat-backend:backend")
                     }
                 }
             }
@@ -72,7 +72,6 @@ pipeline {
             steps {
                 script {
                     withDockerRegistry([credentialsId: "DockerHubCred", url: ""]) {
-                        def backendImage = docker.image("veerendragoudatp10/chat-frontend:latest")
                         backendImage.push()
                     }
                 }
