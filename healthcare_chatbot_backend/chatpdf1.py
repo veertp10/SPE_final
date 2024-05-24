@@ -29,11 +29,11 @@ nltk.download('punkt')
 
 import boto3
 
-# Create an S3 client
-s3 = boto3.client('s3')
+# # Create an S3 client
+# s3 = boto3.client('s3')
 
-# Download the model pickle file from S3
-s3.download_file('healthcarechatbot1', 'ExtraTrees', 'ExtraTrees')
+# # Download the model pickle file from S3
+# s3.download_file('healthcarechatbot1', 'ExtraTrees', 'ExtraTrees')
 
 # Load the model from the downloaded pickle file
 with open('ExtraTrees', 'rb') as f:
