@@ -14,6 +14,16 @@ pipeline {
             }
         }
 
+        stage('Docker Login') {
+            steps {
+                script {
+                    docker.withRegistry("${DOCKER_REGISTRY}", "${DOCKER_CREDENTIALS}") {
+                        sh 'echo "Docker login successful!"'
+                    }
+                }
+            }
+        }
+
         stage('Train Model') {
             steps {
                 script {
