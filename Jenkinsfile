@@ -49,15 +49,13 @@ pipeline {
         // }
         stage('Run ansible playbook'){
             steps{
-                dir(ansible-deploy){
+            
                     script {
-                        ansiblePlaybook(
-                            playbook: 'ansible-book.yml',
-                            inventory: 'inventory'
+                         ansiblePlaybook becomeUser: null, colorized: true, disableHostKeyChecking: true, installation: 'Ansible', playbook: './ansible-deploy/ansible-book.yml', sudoUser: null
                     
                         )
                     }
-                }
+                
             }
         }
         // stage('Deploy frontend to Kubernetes') {
