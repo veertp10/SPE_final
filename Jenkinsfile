@@ -2,8 +2,6 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_REGISTRY = 'https://hub.docker.com/'
-        DOCKER_CREDENTIALS = credentials('DockerHubCred')
         S3_BUCKET = 'healthcarechatbot1'
     }
 
@@ -14,31 +12,16 @@ pipeline {
             }
         }
 
-        stage('Docker Login') {
-            steps {
-                script {
-                    docker.withRegistry("${DOCKER_REGISTRY}", "${DOCKER_CREDENTIALS}") {
-                        sh 'echo "Docker login successful!"'
-                    }
-                }
-            }
-        }
-
         stage('Train Model') {
             steps {
                 script {
-                    // Build the Docker image for training the model
-                    def trainImage = docker.build('train-model', '-f training/Dockerfile training')
-                    
-                    // Push the Docker image to the Docker registry
-                    docker.withRegistry("${DOCKER_REGISTRY}", "${DOCKER_CREDENTIALS}") {
+                    def trainImage = docker.build("train-model:latest", '-f training/Dockerfile training')
+                    withDockerRegistry([credentialsId: "DockerHubCred", url: ""]) {
                         trainImage.push("${env.BUILD_NUMBER}")
                     }
-                    
-                    // Run the training process inside the Docker container
                     withAWS(credentials: 'aws-s3-creds') {
                         sh """
-                            docker run --rm -v ${pwd()}/training:/app ${trainImage.imageName()}:${env.BUILD_NUMBER}
+                            docker run --rm -v ${pwd()}/training:/app train-model:latest
                             aws s3 cp training/model.pkl s3://${S3_BUCKET}/model.pkl
                         """
                     }
@@ -46,14 +29,43 @@ pipeline {
             }
         }
 
-        stage('Build and Push Docker Images') {
+        stage('Build Docker Frontend Image') {
+            steps {
+                dir('frontend') {
+                    script {
+                        def frontendImage = docker.build("veertp10/chat-frontend:frontend")
+                    }
+                }
+            }
+        }
+
+        stage('Push Docker Frontend Image') {
             steps {
                 script {
-                    docker.withRegistry("${DOCKER_REGISTRY}", "${DOCKER_CREDENTIALS}") {
-                        def backendImage = docker.build("${DOCKER_REGISTRY}/backend:${env.BUILD_NUMBER}", './backend')
-                        def frontendImage = docker.build("${DOCKER_REGISTRY}/frontend:${env.BUILD_NUMBER}", './frontend')
-                        backendImage.push()
+                    withDockerRegistry([credentialsId: "DockerHubCred", url: ""]) {
+                        def frontendImage = docker.image("veertp10/chat-frontend:frontend")
                         frontendImage.push()
+                    }
+                }
+            }
+        }
+
+        stage('Build Docker Backend Image') {
+            steps {
+                dir('backend') {
+                    script {
+                        def backendImage = docker.build("veertp10/chat-backend:backend")
+                    }
+                }
+            }
+        }
+
+        stage('Push Docker Backend Image') {
+            steps {
+                script {
+                    withDockerRegistry([credentialsId: "DockerHubCred", url: ""]) {
+                        def backendImage = docker.image("veertp10/chat-backend:backend")
+                        backendImage.push()
                     }
                 }
             }
