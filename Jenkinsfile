@@ -53,7 +53,7 @@ pipeline {
                     script {
                          ansiblePlaybook becomeUser: null, colorized: true, disableHostKeyChecking: true, installation: 'Ansible', playbook: './ansible-deploy/ansible-book.yml', sudoUser: null
                     
-                        )
+                        
                     }
                 
             }
