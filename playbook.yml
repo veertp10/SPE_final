@@ -2,4 +2,4 @@
   hosts: localhost
   tasks:
     - name: apply backend
-      shell: kubectl apply -f ../kubernetes/backend.yaml
+      shell: kubectl apply -f kubernetes/backend.yaml
