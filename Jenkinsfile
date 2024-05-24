@@ -53,7 +53,7 @@ pipeline {
                     script {
                         ansiblePlaybook(
                             playbook: 'ansible-book.yml',
-                            inventory: 'inventory',
+                            inventory: 'inventory'
                     
                         )
                     }

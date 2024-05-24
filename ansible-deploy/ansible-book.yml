@@ -1,6 +1,8 @@
 ---
-- name: Deploy chat app to minikube
+- name: kuber
   hosts: localhost
+  remote_user: veerendra
+  become: false
   tasks:
     # - name: Database Configurations Setup
     #   kubernetes.core.k8s:
