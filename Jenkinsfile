@@ -10,22 +10,26 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/veertp10/SPE_final.git'
+                git branch: 'main', url: 'https://github.com/veertp10/SPE_final.git'
             }
         }
 
         stage('Train Model') {
             steps {
                 script {
-                    docker.build('train-model', '-f training/Dockerfile .').push("${DOCKER_REGISTRY}/train-model:${env.BUILD_NUMBER}")
+                    // Build the Docker image for training the model
+                    def trainImage = docker.build('train-model', '-f training/Dockerfile .')
+                    docker.withRegistry("${DOCKER_REGISTRY}", "${DOCKER_CREDENTIALS}") {
+                        trainImage.push("${env.BUILD_NUMBER}")
+                    }
                     withAWS(credentials: 'aws-s3-creds') {
                         sh """
-                            docker run --rm -v ${pwd()}/training:/app ${DOCKER_REGISTRY}/train-model:${env.BUILD_NUMBER}
+                            docker run --rm -v ${pwd()}/training:/app ${trainImage.imageName()}:${env.BUILD_NUMBER}
                             aws s3 cp training/model.pkl s3://${S3_BUCKET}/model.pkl
                         """
                     }
                 }
-             }
+            }
         }
 
         stage('Build and Push Docker Images') {
