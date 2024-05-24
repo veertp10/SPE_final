@@ -31,9 +31,9 @@ pipeline {
 
         stage('Build Docker Frontend Image') {
             steps {
-                dir('frontend') {
+                dir('healthcare_chatbot_frontend') {
                     script {
-                        def frontendImage = docker.build("veertp10/chat-frontend:frontend")
+                        def frontendImage = docker.build("veerendragoudatp10/chat-frontend:latest")
                     }
                 }
             }
@@ -43,7 +43,7 @@ pipeline {
             steps {
                 script {
                     withDockerRegistry([credentialsId: "DockerHubCred", url: ""]) {
-                        def frontendImage = docker.image("veertp10/chat-frontend:frontend")
+                        def frontendImage = docker.image("veerendragoudatp10/chat-frontend:latest")
                         frontendImage.push()
                     }
                 }
@@ -52,9 +52,9 @@ pipeline {
 
         stage('Build Docker Backend Image') {
             steps {
-                dir('backend') {
+                dir('healthcare_chatbot_backend') {
                     script {
-                        def backendImage = docker.build("veertp10/chat-backend:backend")
+                        def backendImage = docker.build("veerendragoudatp10/chat-backend:latest")
                     }
                 }
             }
@@ -64,7 +64,7 @@ pipeline {
             steps {
                 script {
                     withDockerRegistry([credentialsId: "DockerHubCred", url: ""]) {
-                        def backendImage = docker.image("veertp10/chat-backend:backend")
+                        def backendImage = docker.image("veerendragoudatp10/chat-frontend:latest")
                         backendImage.push()
                     }
                 }
