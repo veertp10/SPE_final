@@ -35,7 +35,6 @@ y=le.classes_
 # Assuming you've already loaded your dataset into DataFrames x_train, x_test, x_val, y_train, y_test, y_val
 
 classifiers = {
-    'Random Forest': RandomForestClassifier(),
     'ExtraTrees': ExtraTreesClassifier()
 }
 

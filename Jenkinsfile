@@ -18,10 +18,14 @@ pipeline {
             steps {
                 script {
                     // Build the Docker image for training the model
-                    def trainImage = docker.build('train-model', '-f training/Dockerfile .')
+                    def trainImage = docker.build('train-model', '-f training/Dockerfile training')
+                    
+                    // Push the Docker image to the Docker registry
                     docker.withRegistry("${DOCKER_REGISTRY}", "${DOCKER_CREDENTIALS}") {
                         trainImage.push("${env.BUILD_NUMBER}")
                     }
+                    
+                    // Run the training process inside the Docker container
                     withAWS(credentials: 'aws-s3-creds') {
                         sh """
                             docker run --rm -v ${pwd()}/training:/app ${trainImage.imageName()}:${env.BUILD_NUMBER}
