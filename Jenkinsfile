@@ -49,13 +49,13 @@ pipeline {
         // }
         stage('Run ansible playbook'){
             steps{
-            
-                    script {
-                         ansiblePlaybook becomeUser: null, colorized: true, disableHostKeyChecking: true, installation: 'Ansible', playbook: './ansible-deploy/ansible-book.yml', sudoUser: null
-                    
+                script {
+                    ansiblePlaybook(
+                        playbook: 'playbook.yml',
+                        inventory: 'inventory',
                         
-                    }
-                
+                    )
+                }
             }
         }
         // stage('Deploy frontend to Kubernetes') {

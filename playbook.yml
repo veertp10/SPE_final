@@ -1,0 +1,5 @@
+- name: Deploy to Kubernetes
+  hosts: localhost
+  tasks:
+    - name: apply backend
+      shell: kubectl apply -f ../kubernetes/backend.yaml
