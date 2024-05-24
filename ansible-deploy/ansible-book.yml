@@ -1,0 +1,23 @@
+---
+- name: Deploy chat app to minikube
+  hosts: all
+  tasks:
+    # - name: Database Configurations Setup
+    #   kubernetes.core.k8s:
+    #     kubeconfig: /etc/ansible/config
+    #     state: present
+    #     definition: "{{ lookup('template', '../kubernates/backend.yaml') }}"
+    - name: apply backend
+      shell: kubectl apply --validate=false -f ../kubernates/backend.yaml
+
+    # - name: apply elasticsearch
+    #   shell: kubectl apply -f ../kubernetes/elasticsearch.yaml
+
+    # - name: apply logstash
+    #   shell: kubectl apply -f ../kubernetes/logstash.yaml
+
+    # - name: apply kibana
+    #   shell: kubectl apply -f ../kubernetes/kibana.yaml
+
+    # - name: apply filebeat
+    #   shell: kubectl apply -f ../kubernetes/filebeat.yaml
