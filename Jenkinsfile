@@ -27,17 +27,16 @@ pipeline {
         
 
         stage('Push Model to S3') {
-            steps {
-                script {
-                    withAWS(credentials: 'aws-s3-creds') {
-                        sh """
-                            docker run --rm -v ${pwd()}/training:/app veerendragoudatp10/train-model:${env.BUILD_NUMBER}
-                            aws s3 cp training/model.pkl s3://${S3_BUCKET}/model.pkl
-                        """
-                    }
-                }
+    steps {
+        script {
+            withAWS(credentials: 'aws-s3-creds', region: 'us-west-2') {
+                sh """
+                    aws s3 cp ${WORKSPACE}/ExtraTrees.pkl s3://${S3_BUCKET}/ExtraTrees.pkl
+                """
             }
         }
+    }
+}
 
         stage('Build Docker Frontend Image') {
             steps {
