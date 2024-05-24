@@ -2,30 +2,30 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_REGISTRY = 'your-docker-registry.io'
-        DOCKER_CREDENTIALS = credentials('your-docker-credentials')
-        S3_BUCKET = 'your-s3-bucket'
+        DOCKER_REGISTRY = 'https://hub.docker.com/'
+        DOCKER_CREDENTIALS = credentials('DockerHubCred')
+        S3_BUCKET = 'healthcarechatbot1'
     }
 
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/your-repo/your-app.git'
+                git 'https://github.com/veertp10/SPE_final.git'
             }
         }
 
         stage('Train Model') {
             steps {
                 script {
-                    docker.build('train-model', '-f train_model/Dockerfile .').push("${DOCKER_REGISTRY}/train-model:${env.BUILD_NUMBER}")
+                    docker.build('train-model', '-f training/Dockerfile .').push("${DOCKER_REGISTRY}/train-model:${env.BUILD_NUMBER}")
                     withAWS(credentials: 'aws-s3-creds') {
                         sh """
-                            docker run --rm -v ${pwd()}/train_model:/app ${DOCKER_REGISTRY}/train-model:${env.BUILD_NUMBER}
-                            aws s3 cp train_model/model.pkl s3://${S3_BUCKET}/model.pkl
+                            docker run --rm -v ${pwd()}/training:/app ${DOCKER_REGISTRY}/train-model:${env.BUILD_NUMBER}
+                            aws s3 cp training/model.pkl s3://${S3_BUCKET}/model.pkl
                         """
                     }
                 }
-            }
+             }
         }
 
         stage('Build and Push Docker Images') {
