@@ -1,12 +1,28 @@
 ---
-- hosts: localhost
-  become: yes
-  vars:
-    ansible_user: veerendra
-    ansible_ssh_pass: veerendra
+- name: Deploy chat app to minikube
+  hosts: localhost
   tasks:
-    - name: Apply Kubernetes frontend manifest
-      kubectl:
-        binary_insecure_skip_tls_verify: true
-        filename: kubernetes/frontend.yaml
-        state: present
+    # - name: Database Configurations Setup
+    #   kubernetes.core.k8s:
+    #     kubeconfig: /etc/ansible/config
+    #     state: present
+    #     definition: "{{ lookup('template', '../kubernates/backend.yaml') }}"
+    - name: Create Kubernetes manifests
+      template:
+        src: kubernetes/backend.yaml
+        dest: ./backend.yaml
+
+    - name: Apply Kubernetes manifests
+      command: kubectl apply -f ./deployment.yml --validate=false
+
+    # - name: apply elasticsearch
+    #   shell: kubectl apply -f ../kubernetes/elasticsearch.yaml
+
+    # - name: apply logstash
+    #   shell: kubectl apply -f ../kubernetes/logstash.yaml
+
+    # - name: apply kibana
+    #   shell: kubectl apply -f ../kubernetes/kibana.yaml
+
+    # - name: apply filebeat
+    #   shell: kubectl apply -f ../kubernetes/filebeat.yaml
