@@ -25,7 +25,7 @@ pipeline {
                 script {
                     withAWS(credentials: 'aws-access-key-id, aws-secret-access-key', region: 'eu-north-1') {
                         sh """
-                            aws s3 cp ${WORKSPACE}/ExtraTrees s3://${S3_BUCKET}/ExtraTrees
+                            aws s3 cp ${WORKSPACE}/ExtraTrees s3://${healthcarechatbot1}/ExtraTrees
                         """
                     }
                 }
