@@ -4,20 +4,20 @@
     - name: Create ConfigMap
       kubernetes.core.k8s:
         state: present
-        src: kubernetes/backend.yaml
+        src: /var/lib/jenkins/workspace/SPE_final/kubernetes/backend.yaml
         namespace: default
         kind: ConfigMap
 
     - name: Create Deployment
       kubernetes.core.k8s:
-        state: present  
-        src: kubernetes/backend.yaml
+        state: present
+        src: /var/lib/jenkins/workspace/SPE_final/kubernetes/backend.yaml
         namespace: default
         kind: Deployment
 
     - name: Create Service
       kubernetes.core.k8s:
         state: present
-        src: kubernetes/backend.yaml
+        src: /var/lib/jenkins/workspace/SPE_final/kubernetes/backend.yaml
         namespace: default
         kind: Service
