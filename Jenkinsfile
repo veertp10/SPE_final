@@ -23,13 +23,13 @@ pipeline {
         stage('Push Model to S3') {
             steps {
                 script {
-                    withAWS(credentials: 'aws-s3-creds', region: 'us-west-2') {
+                    withAWS(credentials: 'aws-access-key-id, aws-secret-access-key', region: 'eu-north-1') {
                         sh """
-                            aws s3 cp ${WORKSPACE}/ExtraTrees.pkl s3://${S3_BUCKET}/ExtraTrees.pkl
+                            aws s3 cp ${WORKSPACE}/ExtraTrees s3://${S3_BUCKET}/ExtraTrees
                         """
                     }
                 }
-            }
+            }   
         }
 
         stage('Build Docker Frontend Image') {
