@@ -1,5 +1,23 @@
 - name: Deploy to Kubernetes
   hosts: localhost
   tasks:
-    - name: apply backend
-      shell: kubectl apply -f kubernetes/backend.yaml
+    - name: Create ConfigMap
+      kubernetes.core.k8s:
+        state: present
+        src: kubernetes/backend.yaml
+        namespace: default
+        kind: ConfigMap
+
+    - name: Create Deployment
+      kubernetes.core.k8s:
+        state: present  
+        src: kubernetes/backend.yaml
+        namespace: default
+        kind: Deployment
+
+    - name: Create Service
+      kubernetes.core.k8s:
+        state: present
+        src: kubernetes/backend.yaml
+        namespace: default
+        kind: Service
