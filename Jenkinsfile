@@ -2,7 +2,10 @@ pipeline {
     agent any
 
     environment {
-        S3_BUCKET = 'healthcarechatbot1'
+        AWS_ACCESS_KEY_ID = credentials('aws-access-key-id')
+        AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
+        AWS_DEFAULT_REGION = "eu-north-1"
+        S3_BUCKET_NAME = "healthcarechatbot1"
     }
 
     stages {
@@ -24,16 +27,14 @@ pipeline {
             }
         }
 
-        stage('Push Model to S3') {
+        stage('Upload to S3') {
             steps {
                 script {
-                    withAWS(credentials: 'aws-access-key-id, aws-secret-access-key', region: 'eu-north-1') {
-                        sh """
-                            aws s3 cp ${WORKSPACE}/ExtraTrees s3://${S3_BUCKET}/ExtraTrees
-                        """
-                    }
+                    sh """
+                        aws s3 cp ExtraTrees s3://${S3_BUCKET_NAME}/ExtraTrees --region ${AWS_DEFAULT_REGION}
+                    """
                 }
-            }   
+            }
         }
 
         stage('Build Docker Frontend Image') {
