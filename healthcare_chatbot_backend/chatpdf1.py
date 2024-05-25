@@ -29,15 +29,22 @@ nltk.download('punkt')
 
 import boto3
 
-# # Create an S3 client
-# s3 = boto3.client('s3')
+# Create an S3 client
+s3 = boto3.client(
+    's3',
+    aws_access_key_id=os.environ.get('AWS_ACCESS_KEY_ID'),
+    aws_secret_access_key=os.environ.get('AWS_SECRET_ACCESS_KEY')
+)
 
-# # Download the model pickle file from S3
-# s3.download_file('healthcarechatbot1', 'ExtraTrees', 'ExtraTrees')
+# Set the bucket name and file path
+bucket_name = 'healthcarechatbot1'
+s3_file_path = 'ExtraTrees'
 
-# Load the model from the downloaded pickle file
-with open('ExtraTrees', 'rb') as f:
-    disease_model = pickle.load(f)
+# Load the file from S3
+s3_object = s3.get_object(Bucket=bucket_name, Key=s3_file_path)
+disease_model = pickle.loads(s3_object['Body'].read())
+# with open('ExtraTrees', 'rb') as f:
+#     disease_model = pickle.load(f)
 
 app = Flask(__name__)
 CORS(app)  # Add this line

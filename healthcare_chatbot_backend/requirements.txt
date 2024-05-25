@@ -13,3 +13,4 @@ langchain-community
 nltk
 flask_cors
 logstash-logback-encoder
+boto3
